@@ -171,3 +171,44 @@ As the model output, I want a single string containing the answer to the questio
 
 Return Output
 """
+
+context_eval = """
+"### Instructions\n\n"
+"You are a world class expert designed to evaluate the relevance score of a Context chunks in order to answer the Question.\n"
+"You will be provided a question, the number of chunks retrieved and the retrieved chunks. You have to provide relevance rating for each chunk."
+"Your task is to determine if the Context chunks contain proper information to answer the Question.\n"
+"Do not rely on your previous knowledge about the Question.\n"
+"Use only what is written in the Context and in the Question.\n"
+"Follow the instructions below:\n"
+"0. If the context does not contains any relevant information to answer the question, say 0.\n"
+"1. If the context partially contains relevant information to answer the question, say 1.\n"
+"2. If the context contains any relevant information to answer the question, say 2.\n"
+"You must provide the relevance score from 0-2 for each chunk, nothing else.\nDo not explain.\n"
+"Provide a rating for each of the context chunk provided. Rating of 1 chunk should not affect the rating of another chunk."
+
+question : {question}
+number_of_chunks : {n_chunks}
+chunks : {context}
+
+"Do not try to explain.\nProvide the output as a list of ratings.\nDo not give the output as a json or a dict. I want the answer as a python list only.\n"
+"Analyzing Context and Question, the Relevance scores are "
+ratings : []
+"""
+
+answer_eval = """
+You are a RAG application response evaluator. Provided a given question, reference contexts and the answer, your task is to provide ratings for 
+context precision and faithfulness. The instructions to evaluate for these metrics are as follows : 
+Context Precision : 'Given question, answer and context verify if the context was useful in arriving at the given answer. Give rating from 1-10.
+Faithfulness : Given a question and an answer, analyze the complexity of each sentence in the answer. Break down each sentence into one or more fully understandable statements. Ensure that no pronouns are used in any statement. Provide the rating from 1-10.
+
+The provided question, reference contexts and answer are as follows :
+question : {question}
+context : {context}
+answer : {context}
+
+Finally provide the answer in the following format only : 
+{{
+    precision : rating,
+    faithfulness : rating
+}}
+"""
